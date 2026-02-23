@@ -30,10 +30,21 @@ class ManagedProcess:
 
 
 class Agent:
-    def __init__(self, server_url, token, poll_interval=5, allow_insecure_http=False, ca_cert=None):
+    def __init__(
+        self,
+        server_url,
+        token,
+        poll_interval=5,
+        sync_interval=15,
+        heartbeat_interval=15,
+        allow_insecure_http=False,
+        ca_cert=None,
+    ):
         self.server_url = server_url.strip().rstrip("/")
         self.token = token.strip()
-        self.poll_interval = poll_interval
+        self.poll_interval = max(1, int(poll_interval))
+        self.sync_interval = max(self.poll_interval, int(sync_interval))
+        self.heartbeat_interval = max(self.poll_interval, int(heartbeat_interval))
         self.processes = {}
         self.session = requests.Session()
         self.session.headers.update({"Content-Type": "application/json"})
@@ -150,16 +161,19 @@ class Agent:
     def heartbeat(self):
         statuses = []
         for app_id, managed in self.processes.items():
-            if managed.process and managed.process.poll() is None:
+            process_alive = managed.process and managed.process.poll() is None
+            external_alive = managed.external_pid and self._is_pid_alive(managed.external_pid)
+
+            if process_alive:
                 state = "running"
                 pid = managed.process.pid
-            elif managed.external_pid and self._is_pid_alive(managed.external_pid):
+            elif external_alive:
                 state = "running"
                 pid = managed.external_pid
             else:
                 if managed.process and managed.process.poll() is not None:
                     managed.exit_code = managed.process.returncode
-                if managed.external_pid and not self._is_pid_alive(managed.external_pid):
+                if managed.external_pid and not external_alive:
                     managed.external_pid = None
                     self._clear_saved_pid(app_id)
                 state = "stopped"
@@ -256,23 +270,32 @@ class Agent:
         managed.external_pid = None
 
     def run(self):
-        last_register = 0
+        last_register = 0.0
+        last_sync = 0.0
+        last_heartbeat = 0.0
+        desired = {}
         while True:
             try:
-                if time.time() - last_register > 60:
+                now = time.monotonic()
+
+                if now - last_register >= 60:
                     self.register()
-                    last_register = time.time()
+                    last_register = now
 
-                apps = self.fetch_apps()
-                desired = {item["id"]: item for item in apps if item.get("always_on", True) and item.get("enabled", True)}
-                desired_ids = set(desired.keys())
+                if now - last_sync >= self.sync_interval:
+                    apps = self.fetch_apps()
+                    desired = {item["id"]: item for item in apps if item.get("always_on", True) and item.get("enabled", True)}
+                    desired_ids = set(desired.keys())
 
-                self.stop_removed(desired_ids)
+                    self.stop_removed(desired_ids)
+                    last_sync = now
 
                 for app_item in desired.values():
                     self.ensure_running(app_item)
 
-                self.heartbeat()
+                if now - last_heartbeat >= self.heartbeat_interval:
+                    self.heartbeat()
+                    last_heartbeat = now
             except requests.HTTPError as exc:
                 details = ""
                 if exc.response is not None:
@@ -302,7 +325,19 @@ def parse_args():
         "--interval",
         type=int,
         default=int(os.environ.get("AGENT_INTERVAL", "5")),
-        help="Poll interval seconds (or AGENT_INTERVAL in .env)",
+        help="Local supervision loop interval seconds (or AGENT_INTERVAL in .env)",
+    )
+    parser.add_argument(
+        "--sync-interval",
+        type=int,
+        default=int(os.environ.get("AGENT_SYNC_INTERVAL", "15")),
+        help="How often to fetch desired apps from server in seconds (or AGENT_SYNC_INTERVAL in .env)",
+    )
+    parser.add_argument(
+        "--heartbeat-interval",
+        type=int,
+        default=int(os.environ.get("AGENT_HEARTBEAT_INTERVAL", "15")),
+        help="How often to send heartbeat status in seconds (or AGENT_HEARTBEAT_INTERVAL in .env)",
     )
     parser.add_argument(
         "--ca-cert",
@@ -321,6 +356,12 @@ def parse_args():
         parser.error("Missing server URL. Provide --server or set AGENT_SERVER in .env")
     if not args.token:
         parser.error("Missing token. Provide --token or set AGENT_TOKEN in .env")
+    if args.interval < 1:
+        parser.error("--interval must be >= 1")
+    if args.sync_interval < args.interval:
+        args.sync_interval = args.interval
+    if args.heartbeat_interval < args.interval:
+        args.heartbeat_interval = args.interval
     if not args.allow_insecure_http and os.environ.get("AGENT_ALLOW_INSECURE_HTTP", "0") == "1":
         args.allow_insecure_http = True
     return args
@@ -332,6 +373,8 @@ def main():
         server_url=args.server,
         token=args.token,
         poll_interval=args.interval,
+        sync_interval=args.sync_interval,
+        heartbeat_interval=args.heartbeat_interval,
         allow_insecure_http=args.allow_insecure_http,
         ca_cert=args.ca_cert,
     )

@@ -90,6 +90,22 @@ python agent.py --allow-insecure-http
 
 Then add apps in UI with target `Client: <name>`.
 
+### Lower client CPU / network usage
+
+The agent has separate loop intervals:
+
+- `AGENT_INTERVAL` (default `5`): local process supervision loop
+- `AGENT_SYNC_INTERVAL` (default `15`): fetch desired apps from server
+- `AGENT_HEARTBEAT_INTERVAL` (default `15`): send status heartbeat
+
+Example for low-power clients:
+
+```bash
+AGENT_INTERVAL=5
+AGENT_SYNC_INTERVAL=30
+AGENT_HEARTBEAT_INTERVAL=30
+```
+
 ## Notes
 
 - App output logs:
