@@ -44,125 +44,344 @@ TEMPLATE = """
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>App Admin</title>
   <style>
-    body { font-family: Arial, sans-serif; margin: 24px; }
-    h1, h2 { margin-bottom: 8px; }
-    form { margin-bottom: 24px; padding: 12px; border: 1px solid #ddd; border-radius: 8px; }
-    input, select { margin: 4px 0 12px 0; padding: 8px; width: 100%; max-width: 680px; }
-    table { border-collapse: collapse; width: 100%; margin-bottom: 24px; }
-    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-    th { background: #f4f4f4; }
-    .ok { color: #006400; font-weight: 600; }
-    .warn { color: #b05c00; font-weight: 600; }
-    .error { color: #8b0000; font-weight: 600; }
-    .flash { padding: 10px; border-radius: 6px; margin-bottom: 12px; background: #eef6ff; }
-    .inline-form { display: inline-block; margin-right: 8px; margin-bottom: 0; border: none; padding: 0; }
-    button { padding: 6px 10px; cursor: pointer; }
-    code { white-space: pre-wrap; }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            background: #f4f6fb;
+            color: #1f2937;
+            line-height: 1.45;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 28px 20px 40px;
+        }
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+        h1 {
+            margin: 0;
+            font-size: 1.7rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+        .subtitle {
+            margin: 4px 0 0;
+            color: #5b6472;
+            font-size: 0.98rem;
+        }
+        .layout {
+            display: grid;
+            grid-template-columns: minmax(320px, 1fr) minmax(320px, 1fr);
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+        .card {
+            background: #ffffff;
+            border: 1px solid #dce2ec;
+            border-radius: 12px;
+            padding: 16px;
+        }
+        .card h2 {
+            margin: 0 0 12px;
+            font-size: 1.05rem;
+            font-weight: 650;
+            color: #1f2937;
+        }
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: #485465;
+        }
+        input,
+        select {
+            width: 100%;
+            margin: 0 0 12px;
+            padding: 10px 11px;
+            border: 1px solid #cfd6e2;
+            border-radius: 8px;
+            background: #fff;
+            color: #1f2937;
+            font-size: 0.94rem;
+        }
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: #4f76ff;
+            box-shadow: 0 0 0 3px rgba(79, 118, 255, 0.14);
+        }
+        .checks {
+            display: flex;
+            gap: 18px;
+            margin: 2px 0 12px;
+            flex-wrap: wrap;
+        }
+        .checks label {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin: 0;
+            font-weight: 500;
+            color: #334155;
+            cursor: pointer;
+        }
+        input[type="checkbox"] {
+            width: auto;
+            margin: 0;
+            accent-color: #3f66ff;
+        }
+        .actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        button {
+            border: 1px solid #cad3e4;
+            border-radius: 8px;
+            padding: 8px 12px;
+            background: #ffffff;
+            color: #1f2937;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+        .btn-primary {
+            background: #355dff;
+            border-color: #355dff;
+            color: #ffffff;
+        }
+        .btn-danger {
+            background: #fff;
+            border-color: #f0b6be;
+            color: #b42318;
+        }
+        button:hover { filter: brightness(0.98); }
+        .flash {
+            margin-bottom: 16px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 1px solid #c8ddff;
+            background: #edf4ff;
+            color: #123469;
+            font-size: 0.92rem;
+        }
+        .table-card {
+            background: #ffffff;
+            border: 1px solid #dce2ec;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            overflow: hidden;
+        }
+        .table-head {
+            padding: 14px 16px;
+            border-bottom: 1px solid #e7ecf3;
+            font-weight: 650;
+            color: #253040;
+        }
+        .table-wrap { overflow-x: auto; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.92rem;
+        }
+        th,
+        td {
+            text-align: left;
+            padding: 10px 12px;
+            border-bottom: 1px solid #edf1f7;
+            vertical-align: top;
+        }
+        th {
+            background: #fafcff;
+            color: #546172;
+            font-size: 0.8rem;
+            letter-spacing: 0.02em;
+            text-transform: uppercase;
+        }
+        tr:last-child td { border-bottom: none; }
+        code {
+            white-space: pre-wrap;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+            font-size: 0.84rem;
+            color: #334155;
+        }
+        .ok {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 999px;
+            font-weight: 650;
+            color: #1e7a3b;
+            background: #e9f8ee;
+        }
+        .warn {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 999px;
+            font-weight: 650;
+            color: #a05b03;
+            background: #fff5e8;
+        }
+        .error {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 999px;
+            font-weight: 650;
+            color: #b42318;
+            background: #ffeceb;
+        }
+        .inline-form {
+            display: inline-block;
+            margin: 0;
+            padding: 0;
+            border: none;
+            background: transparent;
+        }
+        @media (max-width: 960px) {
+            .layout { grid-template-columns: 1fr; }
+            .topbar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
   </style>
 </head>
 <body>
-  <h1>App Admin</h1>
-  <p>Manage always-on apps on this server and on connected clients.</p>
-    <form method="post" action="{{ url_for('logout') }}" style="padding:0;border:none;margin:0 0 16px 0;">
-        <button type="submit">Logout</button>
-    </form>
+    <div class="container">
+        <div class="topbar">
+            <div>
+                <h1>App Admin</h1>
+                <p class="subtitle">Manage always-on apps on this server and connected clients.</p>
+            </div>
+            <form class="inline-form" method="post" action="{{ url_for('logout') }}">
+                <button type="submit">Logout</button>
+            </form>
+        </div>
 
-  {% with messages = get_flashed_messages() %}
-    {% if messages %}
-      {% for message in messages %}
-        <div class="flash">{{ message }}</div>
-      {% endfor %}
-    {% endif %}
-  {% endwith %}
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="flash">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
 
-  <h2>Create Client</h2>
-  <form method="post" action="{{ url_for('create_client') }}">
-    <label>Client name</label><br>
-    <input name="name" placeholder="client-1" required>
-    <button type="submit">Create Client</button>
-  </form>
+        <div class="layout">
+            <section class="card">
+                <h2>Create Client</h2>
+                <form method="post" action="{{ url_for('create_client') }}">
+                    <label>Client name</label>
+                    <input name="name" placeholder="client-1" required>
+                    <div class="actions">
+                        <button class="btn-primary" type="submit">Create Client</button>
+                    </div>
+                </form>
+            </section>
 
-  <h2>Add App</h2>
-  <form method="post" action="{{ url_for('create_app') }}">
-    <label>Name</label><br>
-    <input name="name" placeholder="tid-app" required>
+            <section class="card">
+                <h2>Add App</h2>
+                <form method="post" action="{{ url_for('create_app') }}">
+                    <label>Name</label>
+                    <input name="name" placeholder="tid-app" required>
 
-    <label>Target</label><br>
-    <select name="target" required>
-      <option value="server">Server (this machine)</option>
-      {% for client in clients %}
-      <option value="client:{{ client['id'] }}">Client: {{ client['name'] }}</option>
-      {% endfor %}
-    </select>
+                    <label>Target</label>
+                    <select name="target" required>
+                        <option value="server">Server (this machine)</option>
+                        {% for client in clients %}
+                        <option value="client:{{ client['id'] }}">Client: {{ client['name'] }}</option>
+                        {% endfor %}
+                    </select>
 
-    <label>Working directory</label><br>
-    <input name="cwd" placeholder="/path/to/project/">
+                    <label>Working directory</label>
+                    <input name="cwd" placeholder="/path/to/project/">
 
-    <label>Command</label><br>
-    <input name="command" placeholder="/path/to/project/.venv/bin/python app.py" required>
+                    <label>Command</label>
+                    <input name="command" placeholder="/path/to/project/.venv/bin/python app.py" required>
 
-    <label><input type="checkbox" name="always_on" checked> Always run</label><br>
-    <label><input type="checkbox" name="enabled" checked> Enabled</label><br>
+                    <div class="checks">
+                        <label><input type="checkbox" name="always_on" checked> Always run</label>
+                        <label><input type="checkbox" name="enabled" checked> Enabled</label>
+                    </div>
 
-    <button type="submit">Add App</button>
-  </form>
+                    <div class="actions">
+                        <button class="btn-primary" type="submit">Add App</button>
+                    </div>
+                </form>
+            </section>
+        </div>
 
-  <h2>Clients</h2>
-  <table>
-    <tr>
-      <th>ID</th><th>Name</th><th>Token</th><th>Last seen</th><th>Hostname</th><th>OS</th>
-    </tr>
-    {% for client in clients %}
-    <tr>
-      <td>{{ client['id'] }}</td>
-      <td>{{ client['name'] }}</td>
-      <td><code>{{ client['token'] }}</code></td>
-      <td>{{ client['last_seen'] or '-' }}</td>
-      <td>{{ client['hostname'] or '-' }}</td>
-      <td>{{ client['os_name'] or '-' }}</td>
-    </tr>
-    {% endfor %}
-  </table>
+        <section class="table-card">
+            <div class="table-head">Clients</div>
+            <div class="table-wrap">
+                <table>
+                    <tr>
+                        <th>ID</th><th>Name</th><th>Token</th><th>Last seen</th><th>Hostname</th><th>OS</th>
+                    </tr>
+                    {% for client in clients %}
+                    <tr>
+                        <td>{{ client['id'] }}</td>
+                        <td>{{ client['name'] }}</td>
+                        <td><code>{{ client['token'] }}</code></td>
+                        <td>{{ client['last_seen'] or '-' }}</td>
+                        <td>{{ client['hostname'] or '-' }}</td>
+                        <td>{{ client['os_name'] or '-' }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </section>
 
-  <h2>Apps</h2>
-  <table>
-    <tr>
-      <th>ID</th><th>Name</th><th>Target</th><th>Command</th><th>cwd</th><th>Status</th><th>PID</th><th>Actions</th>
-    </tr>
-    {% for app_item in apps %}
-    <tr>
-      <td>{{ app_item['id'] }}</td>
-      <td>{{ app_item['name'] }}</td>
-      <td>
-        {% if app_item['target_type'] == 'server' %}
-          server
-        {% else %}
-          client: {{ app_item['client_name'] or app_item['target_client_id'] }}
-        {% endif %}
-      </td>
-      <td><code>{{ app_item['command'] }}</code></td>
-      <td><code>{{ app_item['cwd'] }}</code></td>
-      <td>
-        {% if app_item['last_status'] == 'running' %}
-          <span class="ok">running</span>
-        {% elif app_item['last_status'] in ['cwd_missing', 'start_failed', 'unknown'] %}
-          <span class="error">{{ app_item['last_status'] }}</span>
-        {% else %}
-          <span class="warn">{{ app_item['last_status'] or '-' }}</span>
-        {% endif %}
-      </td>
-      <td>{{ app_item['last_pid'] or '-' }}</td>
-      <td>
-        <form class="inline-form" method="post" action="{{ url_for('toggle_app', app_id=app_item['id']) }}">
-          <button type="submit">{{ 'Disable' if app_item['enabled'] else 'Enable' }}</button>
-        </form>
-        <form class="inline-form" method="post" action="{{ url_for('delete_app', app_id=app_item['id']) }}" onsubmit="return confirm('Delete app {{ app_item['name'] }}?')">
-          <button type="submit">Delete</button>
-        </form>
-      </td>
-    </tr>
-    {% endfor %}
-  </table>
+        <section class="table-card">
+            <div class="table-head">Apps</div>
+            <div class="table-wrap">
+                <table>
+                    <tr>
+                        <th>ID</th><th>Name</th><th>Target</th><th>Command</th><th>cwd</th><th>Status</th><th>PID</th><th>Actions</th>
+                    </tr>
+                    {% for app_item in apps %}
+                    <tr>
+                        <td>{{ app_item['id'] }}</td>
+                        <td>{{ app_item['name'] }}</td>
+                        <td>
+                            {% if app_item['target_type'] == 'server' %}
+                                server
+                            {% else %}
+                                client: {{ app_item['client_name'] or app_item['target_client_id'] }}
+                            {% endif %}
+                        </td>
+                        <td><code>{{ app_item['command'] }}</code></td>
+                        <td><code>{{ app_item['cwd'] }}</code></td>
+                        <td>
+                            {% if app_item['last_status'] == 'running' %}
+                                <span class="ok">running</span>
+                            {% elif app_item['last_status'] in ['cwd_missing', 'start_failed', 'unknown'] %}
+                                <span class="error">{{ app_item['last_status'] }}</span>
+                            {% else %}
+                                <span class="warn">{{ app_item['last_status'] or '-' }}</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ app_item['last_pid'] or '-' }}</td>
+                        <td>
+                            <form class="inline-form" method="post" action="{{ url_for('toggle_app', app_id=app_item['id']) }}">
+                                <button type="submit">{{ 'Disable' if app_item['enabled'] else 'Enable' }}</button>
+                            </form>
+                            <form class="inline-form" method="post" action="{{ url_for('delete_app', app_id=app_item['id']) }}" onsubmit="return confirm('Delete app {{ app_item['name'] }}?')">
+                                <button class="btn-danger" type="submit">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </section>
+    </div>
 </body>
 </html>
 """
@@ -176,30 +395,99 @@ LOGIN_TEMPLATE = """
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Admin Login</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 24px; max-width: 560px; }
-        form { margin-top: 16px; padding: 12px; border: 1px solid #ddd; border-radius: 8px; }
-        input { margin: 4px 0 12px 0; padding: 8px; width: 100%; }
-        .flash { padding: 10px; border-radius: 6px; margin-bottom: 12px; background: #eef6ff; }
-        button { padding: 8px 12px; cursor: pointer; }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: grid;
+            place-items: center;
+            padding: 24px;
+            font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            background: linear-gradient(160deg, #f5f8ff, #eef2ff 45%, #f6f7fb 100%);
+            color: #1f2937;
+        }
+        .panel {
+            width: 100%;
+            max-width: 420px;
+            background: #ffffff;
+            border: 1px solid #dbe2ef;
+            border-radius: 14px;
+            padding: 22px;
+        }
+        h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            letter-spacing: -0.02em;
+        }
+        p {
+            margin: 8px 0 0;
+            color: #5c6574;
+            font-size: 0.95rem;
+        }
+        form { margin-top: 16px; }
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: #485465;
+        }
+        input {
+            width: 100%;
+            margin: 0 0 12px;
+            padding: 10px 11px;
+            border: 1px solid #cfd6e2;
+            border-radius: 8px;
+            font-size: 0.94rem;
+            color: #1f2937;
+        }
+        input:focus {
+            outline: none;
+            border-color: #4f76ff;
+            box-shadow: 0 0 0 3px rgba(79, 118, 255, 0.14);
+        }
+        .flash {
+            padding: 10px 12px;
+            border-radius: 8px;
+            margin-top: 14px;
+            margin-bottom: 2px;
+            border: 1px solid #c8ddff;
+            background: #edf4ff;
+            color: #123469;
+            font-size: 0.92rem;
+        }
+        button {
+            width: 100%;
+            border: 1px solid #355dff;
+            border-radius: 8px;
+            padding: 10px 12px;
+            background: #355dff;
+            color: #fff;
+            font-weight: 650;
+            cursor: pointer;
+        }
+        button:hover { filter: brightness(0.98); }
     </style>
 </head>
 <body>
-    <h1>Admin Login</h1>
-    <p>Sign in to manage apps and clients.</p>
+    <div class="panel">
+        <h1>Admin Login</h1>
+        <p>Sign in to manage apps and clients.</p>
 
-    {% with messages = get_flashed_messages() %}
-        {% if messages %}
-            {% for message in messages %}
-                <div class="flash">{{ message }}</div>
-            {% endfor %}
-        {% endif %}
-    {% endwith %}
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="flash">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
 
-    <form method="post" action="{{ url_for('login') }}">
-        <label>Password</label><br>
-        <input type="password" name="password" required autofocus>
-        <button type="submit">Login</button>
-    </form>
+        <form method="post" action="{{ url_for('login') }}">
+            <label>Password</label>
+            <input type="password" name="password" required autofocus>
+            <button type="submit">Login</button>
+        </form>
+    </div>
 </body>
 </html>
 """
