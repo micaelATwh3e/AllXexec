@@ -44,199 +44,254 @@ TEMPLATE = """
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>App Admin</title>
   <style>
+        @import url('https://fonts.googleapis.com/css2?family=Newsreader:wght@300;500&family=Space+Grotesk:wght@400;600;700&display=swap');
+
+        :root {
+            --bg: #f6f0e7;
+            --bg-accent: #dde7de;
+            --ink: #1f2a2e;
+            --muted: #5b6b6f;
+            --brand: #0f6a67;
+            --brand-2: #b85c38;
+            --card: #fff8ee;
+            --border: #e1d5c5;
+            --success: #2a7f62;
+            --warn: #b85c38;
+            --error: #8b2f2f;
+            --shadow: 0 20px 50px rgba(26, 36, 40, 0.12);
+        }
+
         * { box-sizing: border-box; }
+
         body {
             margin: 0;
-            font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-            background: #f4f6fb;
-            color: #1f2937;
-            line-height: 1.45;
+            font-family: 'Space Grotesk', system-ui, sans-serif;
+            color: var(--ink);
+            background: radial-gradient(circle at top left, #fef7ed 0%, var(--bg) 45%, var(--bg-accent) 100%);
+            min-height: 100vh;
         }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 28px 20px 40px;
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(120deg, rgba(15, 106, 103, 0.08), rgba(184, 92, 56, 0.06));
+            pointer-events: none;
+            z-index: -1;
         }
-        .topbar {
+
+        header {
+            padding: 28px 60px 16px;
             display: flex;
             align-items: center;
             justify-content: space-between;
             gap: 12px;
-            margin-bottom: 18px;
         }
-        h1 {
+
+        .brand {
+            display: flex;
+            align-items: baseline;
+            gap: 12px;
+        }
+
+        .brand h1 {
             margin: 0;
-            font-size: 1.7rem;
-            font-weight: 700;
-            letter-spacing: -0.02em;
+            font-size: 26px;
+            letter-spacing: 0.02em;
         }
-        .subtitle {
-            margin: 4px 0 0;
-            color: #5b6472;
-            font-size: 0.98rem;
+
+        .brand span {
+            font-family: 'Newsreader', serif;
+            color: var(--muted);
+            font-size: 15px;
         }
-        .layout {
-            display: grid;
-            grid-template-columns: minmax(320px, 1fr) minmax(320px, 1fr);
-            gap: 16px;
-            margin-bottom: 16px;
+
+        main {
+            padding: 10px 60px 60px;
         }
+
+        .hero {
+            margin-bottom: 22px;
+        }
+
+        .hero h2 {
+            font-size: 32px;
+            margin: 0 0 8px;
+        }
+
+        .hero p {
+            margin: 0;
+            color: var(--muted);
+            font-family: 'Newsreader', serif;
+            font-size: 18px;
+        }
+
         .card {
-            background: #ffffff;
-            border: 1px solid #dce2ec;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            padding: 24px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .table-card {
+            margin-bottom: 20px;
+        }
+
+        .table-card h3 {
+            margin: 0 0 14px;
+            font-size: 20px;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
             border-radius: 12px;
-            padding: 16px;
+            border: 1px solid var(--border);
+            background: #fffdf8;
         }
-        .card h2 {
-            margin: 0 0 12px;
-            font-size: 1.05rem;
-            font-weight: 650;
-            color: #1f2937;
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
         }
+
+        .table th,
+        .table td {
+            padding: 12px 8px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+            vertical-align: top;
+        }
+
+        .table th {
+            background: #f7eee1;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--muted);
+        }
+
+        .table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .form-title {
+            margin: 0 0 14px;
+            font-size: 22px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 14px;
+        }
+
+        .field {
+            grid-column: span 1;
+        }
+
+        .field.full {
+            grid-column: 1 / -1;
+        }
+
         label {
             display: block;
-            margin-bottom: 6px;
-            font-size: 0.88rem;
+            margin: 0 0 6px;
+            font-size: 13px;
             font-weight: 600;
-            color: #485465;
+            color: var(--muted);
         }
-        input,
+
+        input[type="text"],
         select {
             width: 100%;
-            margin: 0 0 12px;
-            padding: 10px 11px;
-            border: 1px solid #cfd6e2;
-            border-radius: 8px;
-            background: #fff;
-            color: #1f2937;
-            font-size: 0.94rem;
+            padding: 10px 12px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            background: #fffdf8;
+            font-family: inherit;
+            color: var(--ink);
         }
-        input:focus,
-        select:focus {
-            outline: none;
-            border-color: #4f76ff;
-            box-shadow: 0 0 0 3px rgba(79, 118, 255, 0.14);
-        }
+
         .checks {
             display: flex;
-            gap: 18px;
-            margin: 2px 0 12px;
+            gap: 16px;
             flex-wrap: wrap;
+            margin-top: 4px;
         }
+
         .checks label {
             display: inline-flex;
             align-items: center;
             gap: 8px;
             margin: 0;
-            font-weight: 500;
-            color: #334155;
-            cursor: pointer;
+            font-size: 14px;
+            color: var(--ink);
         }
-        input[type="checkbox"] {
-            width: auto;
-            margin: 0;
-            accent-color: #3f66ff;
-        }
-        .actions {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-        button {
-            border: 1px solid #cad3e4;
-            border-radius: 8px;
-            padding: 8px 12px;
-            background: #ffffff;
-            color: #1f2937;
+
+        .button {
+            background: var(--brand);
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            padding: 10px 16px;
             font-weight: 600;
-            font-size: 0.9rem;
             cursor: pointer;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+            box-shadow: 0 10px 20px rgba(15, 106, 103, 0.2);
+            text-decoration: none;
+            display: inline-block;
         }
-        .btn-primary {
-            background: #355dff;
-            border-color: #355dff;
-            color: #ffffff;
+
+        .button.secondary {
+            background: transparent;
+            border: 1px solid var(--brand);
+            color: var(--brand);
+            box-shadow: none;
         }
-        .btn-danger {
-            background: #fff;
-            border-color: #f0b6be;
-            color: #b42318;
+
+        .button.danger {
+            background: transparent;
+            border: 1px solid rgba(139, 47, 47, 0.45);
+            color: var(--error);
+            box-shadow: none;
         }
-        button:hover { filter: brightness(0.98); }
+
+        .button:active {
+            transform: translateY(1px);
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .badge.success { background: rgba(42, 127, 98, 0.15); color: var(--success); }
+        .badge.warn { background: rgba(184, 92, 56, 0.18); color: var(--warn); }
+        .badge.error { background: rgba(139, 47, 47, 0.18); color: var(--error); }
+
         .flash {
             margin-bottom: 16px;
-            padding: 10px 12px;
-            border-radius: 8px;
-            border: 1px solid #c8ddff;
-            background: #edf4ff;
-            color: #123469;
-            font-size: 0.92rem;
-        }
-        .table-card {
-            background: #ffffff;
-            border: 1px solid #dce2ec;
+            padding: 12px 16px;
             border-radius: 12px;
-            margin-bottom: 16px;
-            overflow: hidden;
+            border: 1px solid var(--border);
+            background: #fdf2e4;
         }
-        .table-head {
-            padding: 14px 16px;
-            border-bottom: 1px solid #e7ecf3;
-            font-weight: 650;
-            color: #253040;
-        }
-        .table-wrap { overflow-x: auto; }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.92rem;
-        }
-        th,
-        td {
-            text-align: left;
-            padding: 10px 12px;
-            border-bottom: 1px solid #edf1f7;
-            vertical-align: top;
-        }
-        th {
-            background: #fafcff;
-            color: #546172;
-            font-size: 0.8rem;
-            letter-spacing: 0.02em;
-            text-transform: uppercase;
-        }
-        tr:last-child td { border-bottom: none; }
-        code {
-            white-space: pre-wrap;
-            font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-            font-size: 0.84rem;
-            color: #334155;
-        }
-        .ok {
-            display: inline-block;
-            padding: 2px 8px;
-            border-radius: 999px;
-            font-weight: 650;
-            color: #1e7a3b;
-            background: #e9f8ee;
-        }
-        .warn {
-            display: inline-block;
-            padding: 2px 8px;
-            border-radius: 999px;
-            font-weight: 650;
-            color: #a05b03;
-            background: #fff5e8;
-        }
-        .error {
-            display: inline-block;
-            padding: 2px 8px;
-            border-radius: 999px;
-            font-weight: 650;
-            color: #b42318;
-            background: #ffeceb;
-        }
+
         .inline-form {
             display: inline-block;
             margin: 0;
@@ -244,27 +299,44 @@ TEMPLATE = """
             border: none;
             background: transparent;
         }
-        @media (max-width: 960px) {
-            .layout { grid-template-columns: 1fr; }
-            .topbar {
-                flex-direction: column;
-                align-items: flex-start;
+
+        .toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        code {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+            white-space: pre-wrap;
+            word-break: break-word;
+            color: #2e3940;
+            font-size: 13px;
+        }
+
+        @media (max-width: 900px) {
+            header,
+            main {
+                padding: 16px 20px;
             }
         }
   </style>
 </head>
 <body>
-    <div class="container">
-        <div class="topbar">
-            <div>
-                <h1>App Admin</h1>
-                <p class="subtitle">Manage always-on apps on this server and connected clients.</p>
-            </div>
-            <form class="inline-form" method="post" action="{{ url_for('logout') }}">
-                <button type="submit">Logout</button>
-            </form>
+    <header>
+        <div class="brand">
+            <h1>AAR</h1>
+            <span>App Admin Runner</span>
         </div>
+        <form class="inline-form" method="post" action="{{ url_for('logout') }}">
+            <button class="button secondary" type="submit">Logout</button>
+        </form>
+    </header>
 
+    <main>
         {% with messages = get_flashed_messages() %}
             {% if messages %}
                 {% for message in messages %}
@@ -273,54 +345,64 @@ TEMPLATE = """
             {% endif %}
         {% endwith %}
 
-        <div class="layout">
-            <section class="card">
-                <h2>Create Client</h2>
-                <form method="post" action="{{ url_for('create_client') }}">
-                    <label>Client name</label>
-                    <input name="name" placeholder="client-1" required>
-                    <div class="actions">
-                        <button class="btn-primary" type="submit">Create Client</button>
+        <section class="hero card">
+            <h2>Control center</h2>
+            <p>Manage always-on apps on this server and connected clients.</p>
+        </section>
+
+        <section class="grid">
+            <div class="card">
+                <h3 class="form-title">Create Client</h3>
+                <form method="post" action="{{ url_for('create_client') }}" class="form-grid">
+                    <div class="field full">
+                        <label>Client name</label>
+                        <input type="text" name="name" placeholder="client-1" required>
+                    </div>
+                    <div class="field full">
+                        <button class="button" type="submit">Create Client</button>
                     </div>
                 </form>
-            </section>
+            </div>
 
-            <section class="card">
-                <h2>Add App</h2>
-                <form method="post" action="{{ url_for('create_app') }}">
-                    <label>Name</label>
-                    <input name="name" placeholder="tid-app" required>
-
-                    <label>Target</label>
-                    <select name="target" required>
-                        <option value="server">Server (this machine)</option>
-                        {% for client in clients %}
-                        <option value="client:{{ client['id'] }}">Client: {{ client['name'] }}</option>
-                        {% endfor %}
-                    </select>
-
-                    <label>Working directory</label>
-                    <input name="cwd" placeholder="/path/to/project/">
-
-                    <label>Command</label>
-                    <input name="command" placeholder="/path/to/project/.venv/bin/python app.py" required>
-
-                    <div class="checks">
+            <div class="card">
+                <h3 class="form-title">Add App</h3>
+                <form method="post" action="{{ url_for('create_app') }}" class="form-grid">
+                    <div class="field">
+                        <label>Name</label>
+                        <input type="text" name="name" placeholder="tid-app" required>
+                    </div>
+                    <div class="field">
+                        <label>Target</label>
+                        <select name="target" required>
+                            <option value="server">Server (this machine)</option>
+                            {% for client in clients %}
+                            <option value="client:{{ client['id'] }}">Client: {{ client['name'] }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label>Working directory</label>
+                        <input type="text" name="cwd" placeholder="/path/to/project/">
+                    </div>
+                    <div class="field">
+                        <label>Command</label>
+                        <input type="text" name="command" placeholder="/path/to/project/.venv/bin/python app.py" required>
+                    </div>
+                    <div class="field full checks">
                         <label><input type="checkbox" name="always_on" checked> Always run</label>
                         <label><input type="checkbox" name="enabled" checked> Enabled</label>
                     </div>
-
-                    <div class="actions">
-                        <button class="btn-primary" type="submit">Add App</button>
+                    <div class="field full">
+                        <button class="button" type="submit">Add App</button>
                     </div>
                 </form>
-            </section>
-        </div>
+            </div>
+        </section>
 
-        <section class="table-card">
-            <div class="table-head">Clients</div>
+        <section class="card table-card">
+            <h3>Clients</h3>
             <div class="table-wrap">
-                <table>
+                <table class="table">
                     <tr>
                         <th>ID</th><th>Name</th><th>Token</th><th>Last seen</th><th>Hostname</th><th>OS</th>
                     </tr>
@@ -338,10 +420,10 @@ TEMPLATE = """
             </div>
         </section>
 
-        <section class="table-card">
-            <div class="table-head">Apps</div>
+        <section class="card table-card">
+            <h3>Apps</h3>
             <div class="table-wrap">
-                <table>
+                <table class="table">
                     <tr>
                         <th>ID</th><th>Name</th><th>Target</th><th>Command</th><th>cwd</th><th>Status</th><th>PID</th><th>Actions</th>
                     </tr>
@@ -360,20 +442,20 @@ TEMPLATE = """
                         <td><code>{{ app_item['cwd'] }}</code></td>
                         <td>
                             {% if app_item['last_status'] == 'running' %}
-                                <span class="ok">running</span>
+                                <span class="badge success">running</span>
                             {% elif app_item['last_status'] in ['cwd_missing', 'start_failed', 'unknown'] %}
-                                <span class="error">{{ app_item['last_status'] }}</span>
+                                <span class="badge error">{{ app_item['last_status'] }}</span>
                             {% else %}
-                                <span class="warn">{{ app_item['last_status'] or '-' }}</span>
+                                <span class="badge warn">{{ app_item['last_status'] or '-' }}</span>
                             {% endif %}
                         </td>
                         <td>{{ app_item['last_pid'] or '-' }}</td>
                         <td>
                             <form class="inline-form" method="post" action="{{ url_for('toggle_app', app_id=app_item['id']) }}">
-                                <button type="submit">{{ 'Disable' if app_item['enabled'] else 'Enable' }}</button>
+                                <button class="button secondary" type="submit">{{ 'Disable' if app_item['enabled'] else 'Enable' }}</button>
                             </form>
                             <form class="inline-form" method="post" action="{{ url_for('delete_app', app_id=app_item['id']) }}" onsubmit="return confirm('Delete app {{ app_item['name'] }}?')">
-                                <button class="btn-danger" type="submit">Delete</button>
+                                <button class="button danger" type="submit">Delete</button>
                             </form>
                         </td>
                     </tr>
@@ -381,7 +463,7 @@ TEMPLATE = """
                 </table>
             </div>
         </section>
-    </div>
+    </main>
 </body>
 </html>
 """
@@ -395,85 +477,113 @@ LOGIN_TEMPLATE = """
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Admin Login</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Newsreader:wght@300;500&family=Space+Grotesk:wght@400;600;700&display=swap');
+
+        :root {
+            --bg: #f6f0e7;
+            --bg-accent: #dde7de;
+            --ink: #1f2a2e;
+            --muted: #5b6b6f;
+            --brand: #0f6a67;
+            --card: #fff8ee;
+            --border: #e1d5c5;
+            --shadow: 0 20px 50px rgba(26, 36, 40, 0.12);
+        }
+
         * { box-sizing: border-box; }
+
         body {
             margin: 0;
+            font-family: 'Space Grotesk', system-ui, sans-serif;
+            color: var(--ink);
+            background: radial-gradient(circle at top left, #fef7ed 0%, var(--bg) 45%, var(--bg-accent) 100%);
             min-height: 100vh;
-            display: grid;
-            place-items: center;
-            padding: 24px;
-            font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-            background: linear-gradient(160deg, #f5f8ff, #eef2ff 45%, #f6f7fb 100%);
-            color: #1f2937;
         }
-        .panel {
-            width: 100%;
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(120deg, rgba(15, 106, 103, 0.08), rgba(184, 92, 56, 0.06));
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        main {
             max-width: 420px;
-            background: #ffffff;
-            border: 1px solid #dbe2ef;
-            border-radius: 14px;
-            padding: 22px;
+            margin: 80px auto;
+            padding: 0 20px;
         }
-        h1 {
+
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            padding: 24px;
+        }
+
+        h2 {
             margin: 0;
-            font-size: 1.5rem;
-            letter-spacing: -0.02em;
+            font-size: 30px;
         }
+
         p {
             margin: 8px 0 0;
-            color: #5c6574;
-            font-size: 0.95rem;
+            color: var(--muted);
+            font-family: 'Newsreader', serif;
+            font-size: 18px;
         }
-        form { margin-top: 16px; }
+
+        form {
+            margin-top: 16px;
+        }
+
         label {
             display: block;
             margin-bottom: 6px;
-            font-size: 0.88rem;
+            font-size: 13px;
             font-weight: 600;
-            color: #485465;
+            color: var(--muted);
         }
+
         input {
             width: 100%;
-            margin: 0 0 12px;
-            padding: 10px 11px;
-            border: 1px solid #cfd6e2;
-            border-radius: 8px;
-            font-size: 0.94rem;
-            color: #1f2937;
+            padding: 10px 12px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            background: #fffdf8;
+            font-family: inherit;
+            color: var(--ink);
         }
-        input:focus {
-            outline: none;
-            border-color: #4f76ff;
-            box-shadow: 0 0 0 3px rgba(79, 118, 255, 0.14);
-        }
+
         .flash {
-            padding: 10px 12px;
-            border-radius: 8px;
-            margin-top: 14px;
-            margin-bottom: 2px;
-            border: 1px solid #c8ddff;
-            background: #edf4ff;
-            color: #123469;
-            font-size: 0.92rem;
+            margin-bottom: 12px;
+            padding: 12px 16px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            background: #fdf2e4;
         }
-        button {
-            width: 100%;
-            border: 1px solid #355dff;
-            border-radius: 8px;
-            padding: 10px 12px;
-            background: #355dff;
+
+        .button {
+            background: var(--brand);
             color: #fff;
-            font-weight: 650;
+            border: none;
+            border-radius: 12px;
+            padding: 10px 16px;
+            font-weight: 600;
             cursor: pointer;
+            box-shadow: 0 10px 20px rgba(15, 106, 103, 0.2);
+            width: 100%;
+            margin-top: 16px;
         }
-        button:hover { filter: brightness(0.98); }
     </style>
 </head>
 <body>
-    <div class="panel">
-        <h1>Admin Login</h1>
+    <main>
+      <div class="card">
+        <h2>Welcome back</h2>
         <p>Sign in to manage apps and clients.</p>
-
         {% with messages = get_flashed_messages() %}
             {% if messages %}
                 {% for message in messages %}
@@ -481,13 +591,13 @@ LOGIN_TEMPLATE = """
                 {% endfor %}
             {% endif %}
         {% endwith %}
-
         <form method="post" action="{{ url_for('login') }}">
             <label>Password</label>
             <input type="password" name="password" required autofocus>
-            <button type="submit">Login</button>
+            <button class="button" type="submit">Login</button>
         </form>
-    </div>
+      </div>
+    </main>
 </body>
 </html>
 """
